@@ -1,5 +1,6 @@
 from flask import Flask
-import pdfplumber
+from pdf2image import convert_from_path
+import pytesseract
 
 app = Flask(__name__)
 
@@ -9,20 +10,19 @@ def home():
     text = ""
 
     try:
-        with pdfplumber.open("resume.pdf") as pdf:
-            for page in pdf.pages:
-                extracted = page.extract_text()
+        images = convert_from_path("resume.pdf")
 
-                if extracted:
-                    text += extracted
+        for image in images:
+            text += pytesseract.image_to_string(image, lang="jpn")
 
     except:
-        return "PDFファイルがありません"
+        return "OCR失敗"
 
     keywords = [
         "測量",
         "GIS",
         "CAD",
+        "Python",
         "測量士",
         "測量士補"
     ]
