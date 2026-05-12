@@ -1,15 +1,24 @@
 from flask import Flask
+import PyPDF2
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
 
-    resume_text = """
-    測量経験3年。
-    GIS使用経験あり。
-    CAD操作可能。
-    """
+    file_path = "resume.pdf"
+
+    text = ""
+
+    try:
+        with open(file_path, "rb") as file:
+            reader = PyPDF2.PdfReader(file)
+
+            for page in reader.pages:
+                text += page.extract_text()
+
+    except:
+        return "PDFファイルがありません"
 
     keywords = [
         "測量",
@@ -23,7 +32,7 @@ def home():
     found = []
 
     for keyword in keywords:
-        if keyword in resume_text:
+        if keyword in text:
             found.append(keyword)
 
     result = "検出スキル:<br>"
