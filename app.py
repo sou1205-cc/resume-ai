@@ -1,21 +1,20 @@
 from flask import Flask
-import PyPDF2
+import pdfplumber
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
 
-    file_path = "resume.pdf"
-
     text = ""
 
     try:
-        with open(file_path, "rb") as file:
-            reader = PyPDF2.PdfReader(file)
+        with pdfplumber.open("resume.pdf") as pdf:
+            for page in pdf.pages:
+                extracted = page.extract_text()
 
-            for page in reader.pages:
-                text += page.extract_text()
+                if extracted:
+                    text += extracted
 
     except:
         return "PDFファイルがありません"
@@ -24,7 +23,6 @@ def home():
         "測量",
         "GIS",
         "CAD",
-        "Python",
         "測量士",
         "測量士補"
     ]
